@@ -2,7 +2,7 @@ const User = require('../../../database/models/users');
 
 module.exports = {
     type: 'interactionCreate',
-    run: async (client, interaction) => {
+    run: async (client, interaction, args) => {
         if (interaction.isChatInputCommand()) {
             const cmd = client.commands.get(interaction.commandName);
             if (!cmd) {
