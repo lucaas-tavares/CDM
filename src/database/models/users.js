@@ -7,11 +7,12 @@ const usersModel = new Schema({
     level: { type: Number, default: 1 },
     lastMessage: { type: String, default: '' },
     lastMessageTime: { type: Date, default: Date.now },
-    // bump
     bumps: { type: Number, default: 0 },
     streak: { type: Number, default: 0 },
-    // conquistas
-    achievements: { type: [String], default: null }
+    achievements: { type: [String], default: null },
+    colorsInventory: { type: [String], default: [] },
+    equippedColor: { type: String, default: null }
+
 });
 
 module.exports = model('Membros', usersModel);

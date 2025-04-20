@@ -24,6 +24,12 @@ module.exports = {
             });
         }
 
+        if (!userdb.colorsInventory?.includes(chosenColor.id)) {
+            userdb.colorsInventory = [...(userdb.colorsInventory || []), chosenColor.id];
+        }
+
+        userdb.equippedColor = chosenColor.id;
+
         userdb.points -= chosenColor.price;
         await userdb.save();
 

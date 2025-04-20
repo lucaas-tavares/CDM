@@ -46,7 +46,7 @@ async function updatePanel(client, guildId) {
             + `-# **Cores disponíveis:**\n`
             + colorList + "\n\n"
             + `❓ - **Como realizar a compra?**\n`
-            + `-# **Pressione** o botão abaixo e **digite a posição da cor** que deseja comprar!\n-# Aviso: Ao comprar uma nova cor, a cor antiga será removida!`;
+            + `-# **Pressione** o botão abaixo e **digite a posição da cor** que deseja comprar!\n-# Aviso: Ao comprar uma nova cor, a cor antiga será substituida! Para visualizar suas cores compradas, utilize \`/inventario\`.`;
     }
 
     const embed = new EmbedBuilder()
@@ -88,6 +88,7 @@ module.exports = {
     aliases: ['painelc'],
     description: '「shop」Painel de cores',
     category: "shop",
+    devOnly: true,
     run: async (client, message, args) => {
         let guildData = await Guildas.findOneAndUpdate(
             { _id: message.guild.id },
