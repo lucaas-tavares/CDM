@@ -10,7 +10,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "discord.js": "^14.17.3",
+    "discord.js": "^14.19.3",
     "fs": "^0.0.1-security",
     "groq-sdk": "^0.15.0",
     "mongoose": "^8.9.5",
