@@ -36,7 +36,7 @@ module.exports = {
             return interaction.reply(client.formatEmoji('#e:errado Mencione ao menos um usuário e especifique os pontos.'));
         }
 
-        const viajantesIDs = viajantesString.match(/<@!?(\d+)>/g).map(mention => mention.match(/\d+/)[0]);
+        const viajantesIDs = viajantesString.match(/<@?(\d+)>/g).map(mention => mention.match(/\d+/)[0]);
 
         const promises = viajantesIDs.map(async (id) => {
             try {
