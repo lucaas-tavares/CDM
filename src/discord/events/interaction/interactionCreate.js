@@ -36,13 +36,6 @@ module.exports = {
                 });
             }
 
-            if (componentData.expire && Date.now() > componentData.expire) {
-                return interaction.reply({
-                    content: 'Esta interação expirou.',
-                    ephemeral: true
-                });
-            }
-
             return componentData.run({ client, interaction, userdb, args });
         }
 
