@@ -1,4 +1,5 @@
 const User = require('../../database/models/users');
+const { checkLevelUp } = require('../../functions/utils/xpManager');
 
 const config = {
     xp: {
@@ -10,8 +11,6 @@ const config = {
     levels: {
         base: 1000,
         multiplier: 1.2,
-        minPoints: 150,
-        maxPoints: 450
     }
 };
 
@@ -19,10 +18,10 @@ async function XP(client, message, userdb) {
     try {
         if (message.author.bot || message.channel.type === 'dm')
 
-        if (message.content.length < config.xp.minLength ||
-            message.content === userdb.lastMessage) {
-            return;
-        }
+            if (message.content.length < config.xp.minLength ||
+                message.content === userdb.lastMessage) {
+                return;
+            }
 
         const now = Date.now();
         const lastMessageTime = userdb.lastMessageTime || 0;
@@ -39,24 +38,7 @@ async function XP(client, message, userdb) {
         userdb.lastMessage = message.content;
         userdb.lastMessageTime = now;
 
-        const xpNeeded = Math.floor(config.levels.base * Math.pow(config.levels.multiplier, userdb.level - 1));
-
-        if (userdb.xp >= xpNeeded) {
-            userdb.level += 1;
-            userdb.xp = 0;
-            
-            const pointsEarned = Math.floor(
-                Math.random() * (config.levels.maxPoints - config.levels.minPoints + 1) + 
-                config.levels.minPoints
-            );
-            userdb.points += pointsEarned;
-
-            message.channel.send(client.formatEmoji(
-                `#e:up ${message.author}, você subiu para o nível **${userdb.level}**!\n` +
-                `-# Você ganhou (#pontos) **${pointsEarned} pontos**!`
-            ));
-        }
-
+        checkLevelUp(userdb, client, message.channel);        
         await userdb.save();
 
     } catch (err) {
