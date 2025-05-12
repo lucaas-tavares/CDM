@@ -3,7 +3,6 @@ const User = require('../../../../database/models/users');
 
 module.exports = {
     id: 'rank',
-    expire: 150000 + Date.now(),
     run: async ({ client, interaction, args }) => {
         const [userId, action, currentPage] = args;
         let page = parseInt(currentPage);
