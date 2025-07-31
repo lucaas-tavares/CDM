@@ -1,102 +1,154 @@
-const { ActionRowBuilder, ButtonBuilder, EmbedBuilder } = require('discord.js');
+const {
+  ActionRowBuilder,
+  ButtonBuilder,
+  EmbedBuilder,
+} = require('discord.js');
 const { Guilds } = require('../../../../database/models/guilds.js');
 
-async function updatePanel(client, guildId) {
-    const probabilities = { comum: 0.8, rara: 0.15, lendária: 0.05 };
+async function updatePanel(client, message, guildId) {
+  const probabilities = {
+    c: 0.7,
+    b: 0.2,
+    a: 0.09,
+    s: 0.01,
+  };
 
-    let guildDb = await Guilds.findOneAndUpdate(
-        { _id: guildId },
-        { lastShopUpdate: Date.now() },
-        { new: true, upsert: true }
-    );
+  let guildDb = await Guilds.findOneAndUpdate(
+    { _id: guildId },
+    { lastShopUpdate: Date.now() },
+    { new: true, upsert: true }
+  );
 
-    function getRandomColors() {
-        let availableColors = [];
-        let attempts = 0;
-        while (availableColors.length < 7 && attempts < 50) {
-            attempts++;
-            let selected = guildDb.colors[Math.floor(Math.random() * guildDb.colors.length)];
-            let chance = Math.random();
+  function getRandomColors() {
+    const raritiesLimit = {
+      s: 1,
+      a: 2,
+    };
 
-            if (
-                (selected.rarity === "common" && chance < probabilities.comum) ||
-                (selected.rarity === "rare" && chance < probabilities.rara) ||
-                (selected.rarity === "legendary" && chance < probabilities.lendária)
-            ) {
-                if (!availableColors.some(color => color.id === selected.id)) {
-                    availableColors.push(selected);
-                }
-            }
-        }
-        return availableColors;
+    const counts = {
+      c: 0,
+      b: 0,
+      a: 0,
+      s: 0,
+    };
+
+    const selected = [];
+    const usedIds = new Set();
+    let attempts = 0;
+
+    while (selected.length < 7 && attempts < 100) {
+      attempts++;
+      const candidate =
+        guildDb.colors[Math.floor(Math.random() * guildDb.colors.length)];
+      if (!candidate || usedIds.has(candidate.id)) continue;
+
+      const chance = Math.random();
+      const rarity = candidate.rarity;
+
+      if (chance > probabilities[rarity]) continue;
+
+      if (rarity === 's') {
+        if (counts.s >= raritiesLimit.s) continue;
+        if (counts.a > 0) continue;
+      }
+
+      if (rarity === 'a') {
+        if (counts.s > 0) continue;
+        if (counts.a >= raritiesLimit.a) continue;
+      }
+
+      usedIds.add(candidate.id);
+      selected.push(candidate);
+      counts[rarity]++;
     }
 
-    const selectedColors = getRandomColors();
-    const nextUpdate = Math.floor((Date.now() + 5 * 60 * 60 * 1000) / 1000);
+    return selected;
+  }
 
-    function generateShopMessage() {
-        const colorList = selectedColors.map((color, index) =>
-            `> ${index + 1}. <@&${color.id}>\n> -# Cor: **${color.rarity.charAt(0).toUpperCase() + color.rarity.slice(1)}** - Valor: [ \`${color.price}\` ]`
-        ).join("\n");
+  const selectedColors = getRandomColors();
+  const nextUpdate = Math.floor((Date.now() + 5 * 60 * 60 * 1000) / 1000);
 
-        return `# CDM - Painel de cores\n> Abaixo estão todas as cores que estão __disponíveis__ para comprar __no momento__.\n`
-            + `> - Lembre-se, as cores **atualizam** a cada **5 horas**!!!\n`
-            + `> -# Cores novas **__<t:${nextUpdate}:R>__**!!!\n\n`
-            + `-# **Cores disponíveis:**\n`
-            + colorList + "\n\n"
-            + `❓ - **Como realizar a compra?**\n`
-            + `-# **Pressione** o botão abaixo e **digite a posição da cor** que deseja comprar!\n-# Aviso: Ao comprar uma nova cor, a cor antiga será substituida! Para visualizar suas cores compradas, utilize \`/inventario\`.`;
+  const colorList = selectedColors
+    .map(
+      (color, index) =>
+        `> ${index + 1}. <@&${color.id}>\n> -# → Raridade: **${
+          color.rarity.charAt(0).toUpperCase() + color.rarity.slice(1)
+        }** ・ Pontos: [ \`${color.price}\` ]`
+    )
+    .join('\n');
+
+  const embed = new EmbedBuilder()
+    .setDescription(
+      `
+# CDM - Painel de cores
+> -# - Abaixo estão todas as cores que estão __disponíveis__ no momento.
+> ### Cores novas **__<t:${nextUpdate}:R>__**!!!
+_ _
+-# **Cores disponíveis:**\n ${colorList}
+_ _
+❓ - **Como realizar a compra?**
+- **Pressione** o botão abaixo e **__digite a posição da cor__** que deseja comprar!
+-# ❒ — Aviso: Ao comprar uma nova cor, a cor antiga será desativada! Para ativa-la novamente, utilize \`/inventario\`
+`
+    )
+    .setImage(
+      'https://media.discordapp.net/attachments/1327425235716276322/1377736254447288410/23_Sem_Titulo_1.png'
+    )
+    .setColor('#84764e');
+
+  const button = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId(`buyColor:${guildId}`)
+      .setLabel('Comprar Cor')
+      .setEmoji('<a:yumeniko:1357194427977961502>')
+      .setStyle(2),
+       new ButtonBuilder()
+      .setCustomId(`colorCatalog:${message.author.id}`)
+      .setLabel('Catálogo de cores')
+      .setEmoji('<:1poll:1327468894503305286>')
+      .setStyle(2)
+  );
+
+  try {
+    const guild = await client.guilds.fetch(guildId);
+    const channel = await guild.channels.fetch('1347926420785070080');
+
+    if (guildDb.lastShopMessageId) {
+      channel.messages
+        .fetch(guildDb.lastShopMessageId)
+        .then((msg) => msg.delete())
+        .catch(() => {});
     }
 
-    const embed = new EmbedBuilder()
-        .setDescription(generateShopMessage())
-        .setColor("#5865f2");
+    const newMessage = await channel.send({
+      embeds: [embed],
+      components: [button],
+    });
 
-    const button = new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-            .setCustomId(`buyColor:${guildId}`)
-            .setLabel('Comprar Cor')
-            .setEmoji('<a:yumeniko:1357194427977961502>')
-            .setStyle(2)
-    );
+    guildDb.availableColors = selectedColors;
+    guildDb.lastShopMessageId = newMessage.id;
+    await guildDb.save();
+  } catch (err) {
+    console.log(`Erro - painel de cores: ${err}`);
+  }
 
-    try {
-        const guild = await client.guilds.fetch(guildId);
-        const channel = await guild.channels.fetch('1347926420785070080');
-
-        if (guildDb.lastShopMessageId) {
-            channel.messages.fetch(guildDb.lastShopMessageId)
-                .then(msg => msg.delete())
-                .catch(() => {});
-        }
-
-        const newMessage = await channel.send({ embeds: [embed], components: [button] });
-
-        guildDb.availableColors = selectedColors;
-        guildDb.lastShopMessageId = newMessage.id;
-        await guildDb.save();
-    } catch (err) {
-        console.log(`Erro - painel de cores: ${err}`);
-    }
-
-    setTimeout(() => updatePanel(client, guildId),  5 * 60 * 60 * 1000);
+  setTimeout(() => updatePanel(client, message, guildId), 5 * 60 * 60 * 1000);
 }
 
 module.exports = {
-    name: 'panel-color',
-    aliases: ['painelc'],
-    description: '「shop」Painel de cores',
-    category: "shop",
-    devOnly: true,
-    run: async (client, message, args) => {
-        let guildDb = await Guilds.findOneAndUpdate(
-            { _id: message.guild.id },
-            { shopChannelId: message.channel.id, lastShopUpdate: Date.now() },
-            { new: true, upsert: true }
-        );
+  name: 'panel-color',
+  aliases: ['painelc'],
+  description: '「shop」Painel de cores',
+  category: 'shop',
+  devOnly: true,
+  run: async (client, message, args) => {
+    let guildDb = await Guilds.findOneAndUpdate(
+      { _id: message.guild.id },
+      { shopChannelId: message.channel.id, lastShopUpdate: Date.now() },
+      { new: true, upsert: true }
+    );
 
-        updatePanel(client, message.guild.id)
-        message.reply(":D");
-        
-    }
+    updatePanel(client, message, message.guild.id);
+    message.reply(':D').then((msg) => msg.delete());
+  },
 };

@@ -1,4 +1,4 @@
-const userDB = require('../../database/models/users');
+const Users = require('../../database/models/users');
 
 
 function generatePoints() {
@@ -19,11 +19,11 @@ function randomBetween(min, max) {
  */
 async function addPoints(userId, amount, reason = 'Sistema') {
   if (amount <= 0) return false;
-  const userData = await userDB.findById(userId);
-  if (!userData) return false;
+  const userDb = await Users.findById(userId);
+  if (!userDb) return false;
 
-  userData.points = Math.floor((userData.points || 0) + amount);
-  await userData.save();
+  userDb.points = Math.floor((userDb.points || 0) + amount);
+  await userDb.save();
 
   console.log(`[PONTOS] +${amount} para ${userId} - Motivo: ${reason}`);
   return true;
@@ -36,25 +36,31 @@ async function addPoints(userId, amount, reason = 'Sistema') {
  */
 async function removePoints(userId, amount, reason = 'Sistema') {
   if (amount <= 0) return false;
-  const userData = await userDB.findById(userId);
-  if (!userData) return false;
+  const userDb = await Users.findById(userId);
+  if (!userDb) return false;
 
-  userData.points = Math.max(0, userData.points - amount);
-  await userData.save();
+  userDb.points = Math.max(0, userDb.points - amount);
+  await userDb.save();
 
   console.log(`[PONTOS] -${amount} de ${userId} - Motivo: ${reason}`);
   return true;
 }
 
 
-function milestoneBonus(level) {
+function bonus(level) {
   const table = {
     10: 100,
-    25: 300,
-    50: 750,
-    100: 2000
+    20: 200,
+    30: 300,
+    40: 400,
+    50: 500,
+    60: 600,
+    70: 700,
+    80: 800,
+    90: 900,
+    100: 1000,
   };
   return table[level] || 0;
 }
 
-module.exports = { generatePoints, addPoints, removePoints, milestoneBonus };
+module.exports = { generatePoints, addPoints, removePoints, bonus };

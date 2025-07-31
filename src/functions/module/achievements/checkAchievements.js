@@ -14,7 +14,10 @@ async function checkAchievements(userId, client, context, triggerType) {
   userDb.achievements = userDb.achievements || [];
 
   for (const id in ACHIEVEMENTS) {
+    console.log(id)
+    console.log(ACHIEVEMENTS)
     const achievement = ACHIEVEMENTS[id];
+    console.log(achievement)
 
     if (achievement.triggers && !achievement.triggers.includes(triggerType)) {
       continue;
@@ -33,7 +36,10 @@ async function checkAchievements(userId, client, context, triggerType) {
 
     userDb.achievements.push({
       id: id,
-      unlockedAt: new Date()
+      name: achievement.name,
+      description: achievement.description,
+      category: achievement.category,
+      unlockedAt: Date.now()
     });
 
     if (achievement.rewards?.length) {

@@ -30,7 +30,7 @@ module.exports = {
         if (!interaction.channel.isThread() || interaction.channel.ownerId !== interaction.user.id) {
             return interaction.reply({
                 content: client.formatEmoji('#e:errado Comando restrito ao autor do post!'),
-                ephemeral: true
+                 flags: ['Ephemeral'],
             });
         }
 
@@ -103,7 +103,7 @@ _ _
             console.error('Erro ao recompensar:', error);
             await interaction.reply({
                 content: client.formatEmoji('#e:errado Ocorreu um erro ao processar as recompensas!'),
-                ephemeral: true
+                 flags: ['Ephemeral'],
             });
         }
     }

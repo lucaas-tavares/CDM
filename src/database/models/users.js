@@ -13,13 +13,19 @@ const usersModel = new Schema({
         type: [
             {
                 id: { type: String, required: true },
+                name: { type: String, required: true },
+                category: { type: String, required: true },
+                description: { type: String, required: true },
                 unlockedAt: { type: Date, default: Date.now }
             }
         ],
         default: []
     },      
     colorsInventory: { type: [String], default: [] },
-    equippedColor: { type: String, default: null }
+    equippedColor: { type: String, default: null },
+    aboutme: { type: String, default: 'Olá, mundo!!!'},
+    portfolio: { type: String, default: null },
+    banner: { type: String, default: null },
 
 });
 

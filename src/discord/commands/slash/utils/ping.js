@@ -6,6 +6,6 @@ module.exports = {
     type: Discord.ApplicationCommandType.ChatInput,
     run: async (client, interaction) => {
       
-        interaction.reply(`🏓** | Pong!** \`${client.ws.ping} ms\`.`);
+        interaction.reply(`🏓** | Pong!** \`${client.ws.ping}ms\`.`);
     }
 }

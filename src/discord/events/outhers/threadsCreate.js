@@ -1,4 +1,4 @@
-const { ActionRowBuilder, ButtonBuilder } = require("discord.js");
+const { ActionRowBuilder, ButtonBuilder } = require('discord.js');
 
 const LANGUAGE_TAG_ROLES = {
     'Javascript & nodejs': '1371551152071770233',

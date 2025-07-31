@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const User = require('../../../../database/models/users');
+const Users = require('../../../../database/models/users');
 
 module.exports = {
     name: 'level',
@@ -9,20 +9,20 @@ module.exports = {
         const user = interaction.user;
 
         try {
-            const userData = await User.findById(user.id);
+            const userData = await Users.findById(user.id);
             const xpMultiplier = 1.2;
             const baseXp = 1000;
             const nextLevelXp = Math.floor(baseXp * (userData.level ** xpMultiplier));
 
             interaction.reply({
                 content: client.formatEmoji(`#e:correto ${user}, você está no nível **${userData.level}**!\n-# Sua quantia atual de XP é: \`[${userData.xp.toLocaleString()} / ${nextLevelXp.toLocaleString()}]\``),
-                ephemeral: true,
+                 flags: ['Ephemeral'],
             });
         } catch (err) {
             console.error(`[Erro] Level - ${err.message}`);
             interaction.reply({
                 content: 'Ops... Houve um erro ao tentar buscar seus dados.\n- Que tal tentar novamente mais tarde?',
-                ephemeral: true,
+                 flags: ['Ephemeral'],
             });
         }
     }

@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const User = require('../../../../database/models/users');
+const Users = require('../../../../database/models/users');
 
 module.exports = {
     name: 'pontos-alterar',
@@ -40,7 +40,7 @@ module.exports = {
 
         const promises = viajantesIDs.map(async (id) => {
             try {
-                let userDB = await User.findById(id);
+                let userDB = await Users.findById(id);
 
                 if (!userDB) {
                     return `#e:errado Não foi possível encontrar o <@${id}> em meu banco de dados.`;

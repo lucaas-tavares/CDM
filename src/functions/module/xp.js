@@ -2,48 +2,62 @@ const User = require('../../database/models/users');
 const { checkLevelUp } = require('../../functions/utils/xpManager');
 
 const config = {
-    xp: {
-        min: 50,
-        max: 150,
-        cooldown: 60000,
-        minLength: 10
-    },
-    levels: {
-        base: 1000,
-        multiplier: 1.2,
-    }
+  xp: {
+    cooldown: 30000,
+    maxXP: 60,
+    minLength: 5,
+    minNewLength: 12,
+    divisorMin: 7,
+    divisorMax: 4,
+  },
 };
 
-async function XP(client, message, userdb) {
-    try {
-        if (message.author.bot || message.channel.type === 'dm')
+function newText(text) {
+  return text.replace(/(.)\1+/g, '$1');
+}
 
-            if (message.content.length < config.xp.minLength ||
-                message.content === userdb.lastMessage) {
-                return;
-            }
+async function XP(client, message, userDB) {
+  try {
+    if (message.author.bot || message.channel.type === 'dm') return;
 
-        const now = Date.now();
-        const lastMessageTime = userdb.lastMessageTime || 0;
+    const content = message.content.trim();
 
-        if (now - lastMessageTime < config.xp.cooldown) {
-            return;
-        }
+    if (content.length < config.xp.minLength || content === userDB.lastMessage)
+      return;
 
-        const xpGained = Math.floor(
-            config.xp.min + Math.random() * (config.xp.max - config.xp.min)
-        );
+    const now = Date.now();
+    const lastMessageTime = userDB.lastMessageTime || 0;
+    const textLength = newText(content).length;
 
-        userdb.xp += xpGained;
-        userdb.lastMessage = message.content;
-        userdb.lastMessageTime = now;
+    if (textLength < config.xp.minNewLength) return;
 
-        checkLevelUp(userdb, client, message.channel);        
-        await userdb.save();
+    if (now - lastMessageTime < config.xp.cooldown) return;
 
-    } catch (err) {
-        console.error(`Erro no sistema de XP: ${err.message}`);
+    const minXP = Math.floor(textLength / 2.5);
+    const maxXP = Math.floor(textLength / 1.2);
+    let baseXP = Math.min(
+      config.xp.maxXP,
+      Math.floor(Math.random() * (maxXP - minXP) + minXP)
+    );
+    
+    if (baseXP > config.xp.maxXP) {
+      baseXP = config.xp.maxXP;
     }
+
+    const multiplier = userDB.xpMultiplier || 1.2;
+    const finalXP = Math.floor(baseXP * multiplier);
+
+    userDB.xp += finalXP;
+    userDB.lastMessage = content;
+    userDB.lastMessageTime = now;
+
+    await checkLevelUp(userDB, client, message.channel);
+    await userDB.save();
+
+    console.log(`[XP] ${message.author.username} ganhou ${finalXP} XP.`);
+  } catch (err) {
+    console.error(`[XP ERRO] ${err.message}`);
+  }
 }
 
 module.exports = XP;

@@ -1,4 +1,5 @@
 const { inspect } = require('util');
+const db = require('../../../../database/models/users')
 
 module.exports = {
     name:'eval',

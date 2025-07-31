@@ -3,12 +3,12 @@ module.exports = {
     run: async (client, oldUser, newUser) => {
         const guildId = '1327425233388568576';
         const roleId = '1336520293711089694';
-        const channelId = '1327425235460427829';
+        const channelId = client.config.logChannel;
         const keyWord = 'cdm';
 
         const guild = client.guilds.cache.get(guildId);
         if (!guild) {
-            console.error('Servidor não encontrado.');
+            console.error('[USER UPDATE] - Servidor não encontrado.');
             return;
         }
 
@@ -19,7 +19,7 @@ module.exports = {
 
         const role = guild.roles.cache.get(roleId); 
         if (!role) {
-            console.error('O cargo não foi encontrado.');
+            console.error(' [USER UPDATE] - O cargo não foi encontrado.');
             return;
         }
 
@@ -53,14 +53,14 @@ module.exports = {
                 await member.roles.add(role);
                 channel.send(client.formatEmoji(`#e:correto Cargo adicionado ao usuário ${newUser}\n-# O usuário adicionou a keyword \`[ ${keyWord} ]\`.`));
             } catch (error) {
-                console.error('Erro ao adicionar cargo:', error);
+                console.error('[USER UPDATE] - Erro ao adicionar cargo:', error);
             }
         } else if (keywordRemoved) {
             try {
                 await member.roles.remove(role);
                 channel.send(client.formatEmoji(`#e:errado Cargo removido do usuário ${newUser}\n-# O usuário removeu a keyword \`[ ${keyWord} ]\`.`));
             } catch (error) {
-                console.error('Erro ao remover cargo:', error);
+                console.error('[USER UPDATE] - Erro ao remover cargo:', error);
             }
         }
     }

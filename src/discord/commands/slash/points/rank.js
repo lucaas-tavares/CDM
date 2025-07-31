@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const User = require('../../../../database/models/users');
+const Users = require('../../../../database/models/users');
 
 module.exports = {
     name: 'rank',
@@ -20,8 +20,8 @@ module.exports = {
 
         const getRankingPage = async (page) => {
             const skip = (page - 1) * itemsPerPage;
-            const allUsers = await User.find({ points: { $gt: 0 } }).sort({ points: -1 }).skip(skip).limit(itemsPerPage);
-            const totalUsers = await User.countDocuments({ points: { $gt: 0 } });
+            const allUsers = await Users.find({ points: { $gt: 0 } }).sort({ points: -1 }).skip(skip).limit(itemsPerPage);
+            const totalUsers = await Users.countDocuments({ points: { $gt: 0 } });
             const totalPages = Math.ceil(totalUsers / itemsPerPage);
 
             let desc = `## CDM - Ranking de Pontos\n\n`;
@@ -38,7 +38,7 @@ module.exports = {
                     }
                 }
 
-                let username = member?.tag || member?.user?.tag || "Usuário Desconhecido";
+                let username = member?.tag || member?.user?.tag || 'Usuário Desconhecido';
                 if (rank === 1 && page === 1) username += client.formatEmoji(' #coroa');
 
                 desc += client.formatEmoji(`\`#${rank}\` - **${username}**\n-# - **${user.points.toLocaleString()} pontos**\n`);
@@ -73,7 +73,7 @@ module.exports = {
             await interaction.reply({ embeds: [embed], components: [row] });
         } catch (error) {
             console.error(`Erro ao buscar ranking:`, error);
-            return interaction.reply({ content: 'Eitaaa, houve um erro ao carregar o ranking.', ephemeral: true });
+            return interaction.reply({ content: 'Eitaaa, houve um erro ao carregar o ranking.',  flags: ['Ephemeral'], });
         }
     }
 };

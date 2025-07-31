@@ -8,7 +8,7 @@ module.exports = {
         if (!interaction.channel.isThread() || interaction.channel.ownerId !== interaction.user.id) {
             return interaction.reply({
                 content: client.formatEmoji('#e:errado Apenas o autor pode finalizar este post!'),
-                ephemeral: true
+                 flags: ['Ephemeral'],
             });
         }
 
@@ -31,7 +31,7 @@ _ _
             console.error('Erro ao finalizar post:', error);
             await interaction.reply({
                 content: client.formatEmoji('#e:errado Ocorreu um erro ao finalizar o post!'),
-                ephemeral: true
+                 flags: ['Ephemeral'],
             });
         }
     }

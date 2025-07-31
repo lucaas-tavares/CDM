@@ -1,5 +1,5 @@
 const { formatEmoji } = require('./FormatEmoji');
 
-module["exports"] = {
-    formatEmoji
-}
+module['exports'] = {
+  formatEmoji,
+};

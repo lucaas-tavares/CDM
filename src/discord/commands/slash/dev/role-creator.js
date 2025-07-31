@@ -21,7 +21,7 @@ module.exports = {
         }
     ],
     run: async (client, interaction) => {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({  flags: ['Ephemeral'], });
 
         const referenceRole = interaction.options.getRole('referencia');
         const roleNames = interaction.options.getString('nomes').split(',').map(name => name.trim()).filter(name => name);
@@ -29,7 +29,7 @@ module.exports = {
         if (roleNames.length === 0) {
             return interaction.editReply({
                 content: client.formatEmoji('#e:errado Você deve fornecer pelo menos um nome de cargo válido!'),
-                ephemeral: true
+                 flags: ['Ephemeral'],
             });
         }
 
@@ -49,14 +49,14 @@ module.exports = {
 
             await interaction.editReply({
                 content: client.formatEmoji(`#e:correto **${createdRoles.length} cargos criados** com sucesso abaixo de ${referenceRole}:\n${createdRoles.map(r => `• ${r}`).join('\n')}`),
-                ephemeral: true
+                 flags: ['Ephemeral'],
             });
 
         } catch (error) {
             console.error('Erro ao criar cargos:', error);
             await interaction.editReply({
                 content: client.formatEmoji('#e:errado Ocorreu um erro ao criar os cargos.\n -# **Verifique:**\n- Minhas permissões\n- Nomes válidos\n- Limite de cargos do servidor'),
-                ephemeral: true
+                 flags: ['Ephemeral'],
             });
         }
     }

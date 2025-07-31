@@ -1,10 +1,10 @@
 const Discord = require('discord.js')
 
 module.exports = {
-    name:"ping",
+    name:'ping',
     aliases:['pong'],
     description:'「Util」Veja o ping',
-    category: "util",
+    category: 'util',
     run: async (client, message) => {
         const button = new Discord.ActionRowBuilder()
         .addComponents(

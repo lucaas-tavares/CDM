@@ -1,14 +1,15 @@
 const Discord = require('discord.js');
-const User = require('../../../../database/models/users');
+const Users = require('../../../../database/models/users');
 
 module.exports = {
     id: 'rank',
+    authorOnly: true,
     run: async ({ client, interaction, args }) => {
         const [userId, action, currentPage] = args;
         let page = parseInt(currentPage);
 
         if (!['prev', 'next'].includes(action) || isNaN(page)) {
-            return interaction.reply({ content: 'Interação inválida.', ephemeral: true });
+            return interaction.reply({ content: 'Interação inválida.',  flags: ['Ephemeral'], });
         }
 
         if (action === 'prev') page--;
@@ -16,10 +17,10 @@ module.exports = {
 
         const itemsPerPage = 5;
         const skip = (page - 1) * itemsPerPage;
-        const totalUsers = await User.countDocuments({ points: { $gt: 0 } });
+        const totalUsers = await Users.countDocuments({ points: { $gt: 0 } });
         const totalPages = Math.ceil(totalUsers / itemsPerPage);
 
-        const allUsers = await User.find({ points: { $gt: 0 } }).sort({ points: -1 }).skip(skip).limit(itemsPerPage);
+        const allUsers = await Users.find({ points: { $gt: 0 } }).sort({ points: -1 }).skip(skip).limit(itemsPerPage);
     
         let desc = client.formatEmoji(`## CDM - Ranking de Pontos\n\n`);
 
@@ -34,7 +35,7 @@ module.exports = {
                 }
             }
 
-            let username = member?.username || member?.user?.username || "Usuário Desconhecido";
+            let username = member?.username || member?.user?.username || 'Usuário Desconhecido';
             if (rank === 1 && page === 1) username += client.formatEmoji(' #coroa');
 
             desc += client.formatEmoji(`\`#${rank}\` - **${username}**\n-# - **${user.points.toLocaleString()} pontos**\n`);

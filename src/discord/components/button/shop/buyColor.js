@@ -2,6 +2,7 @@ const { ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = req
 
 module.exports = {
     id: 'buyColor',
+    authorOnly: false,
     run: async ({ client, interaction }) => {
         const colorPosition = new ActionRowBuilder().addComponents(
             new TextInputBuilder()
