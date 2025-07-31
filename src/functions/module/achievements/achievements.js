@@ -2,32 +2,26 @@ const ACHIEVEMENTS = {
     'first_color': {
         id: 'first_color',
         name: 'Primeira Cor!',
+        category: 'color',
         description: 'Você comprou sua primeira cor!',
         condition: async (userDb) => userDb.colorsInventory?.length >= 1,
         rewards: [
             { type: 'points', value: 100 },
-            { type: 'badge', value: 'Colorindo a vida!' },
             { type: 'xp', value: '2000' }
         ],
         triggers: ['color_purchase']
     },
-    'curioso': {
-        id: 'curioso',
-        name: 'Explorador Curioso',
-        description: 'Usou o comando /ajuda pela primeira vez.',
-        condition: async (userDb) => userDb.commandsUsed?.includes('/ajuda'),
-        rewards: []
-    },
     'legendary_hunter': {
         id: 'legendary_hunter',
         name: 'Caçador de cores lendárias!',
+        category: 'color',
         description: 'Comprou todas as cores lendárias disponíveis no servidor.',
         condition: async (userDb, client, guildId, Guilds) => {
             const guildDb = await Guilds.findById(guildId);
             if (!guildDb) return false;
 
             const legendaryColors = guildDb.colors.filter(
-                color => color.rarity === 'legendary'
+                color => color.rarity === 'a'
             ).map(color => color.id);
 
             if (legendaryColors.length === 0) return false;
@@ -44,6 +38,7 @@ const ACHIEVEMENTS = {
     'first_bump': {
         id: 'first_bump',
         name: 'Ajudando a Dimensão!',
+        category: 'bump',
         description: 'Utilizou /bump pela primeira vez',
         condition: async (userDb) => userDb.bumps >= 1,
         rewards: [
@@ -55,6 +50,7 @@ const ACHIEVEMENTS = {
     'streak': {
         id: 'first_streak',
         name: '10x Consecutivos!',
+        category: 'bump',
         description: 'Utilizou /bump 10 vezes seguidas',
         condition: async (userDb) => userDb.streak >= 10,
         rewards: [
