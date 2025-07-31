@@ -10,12 +10,16 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@kauzx/logger": "^1.1.0",
+    "@napi-rs/canvas": "^0.1.73",
     "discord.js": "^14.19.3",
     "fs": "^0.0.1-security",
     "groq-sdk": "^0.15.0",
+    "kompozr": "^1.1.1",
     "mongoose": "^8.9.5",
     "node-cache": "^5.1.2",
     "strcolorize": "^1.1.8",
+    "typescript": "^5.8.3",
     "util": "^0.12.5"
   }
 }
