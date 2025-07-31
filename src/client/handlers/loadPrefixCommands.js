@@ -29,7 +29,7 @@ function loadPrefixCommands(client, logSummary) {
         });
     });
 
-    logSummary.push(`#dim [ Prefix ${commandCount.success}] - #bold black [failed ${commandCount.failed}]`);
+    logSummary.push(`{gray Prefix ${commandCount.success}} - {bold.black failed ${commandCount.failed}}`);
 
     return client.prefixCommands;
 }

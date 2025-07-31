@@ -32,10 +32,10 @@ function loadSlashCommands(client, logSummary) {
     });
 
     logSummary.push(
-        `#dim[Slash ${commandCount.success}] - #bold black[failed ${commandCount.failed}]`
+        `{gray Slash ${commandCount.success}} - {bold.black failed ${commandCount.failed}}`
     );
 
-    client.on("ready", async () => {
+    client.on('ready', async () => {
         await client.application.commands.set(SlashsArray);
     });
 

@@ -1,9 +1,9 @@
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
 
 function loadComponents(client, logSummary = []) {
     const componentCount = { success: 0, failed: 0 };
-    const componentsPath = path.resolve(__dirname, "../../discord/components");
+    const componentsPath = path.resolve(__dirname, '../../discord/components');
 
     if (!fs.existsSync(componentsPath) || !fs.statSync(componentsPath).isDirectory()) {
         console.error(`Caminho de componentes inválido: ${componentsPath}`);
@@ -17,7 +17,7 @@ function loadComponents(client, logSummary = []) {
 
             if (stats.isDirectory()) {
                 loadFromDirectory(entryPath);
-            } else if (entry.endsWith(".js")) {
+            } else if (entry.endsWith('.js')) {
                 try {
                     const components = [].concat(require(entryPath));
                     components.forEach((component) => {
@@ -38,7 +38,7 @@ function loadComponents(client, logSummary = []) {
     };
 
     loadFromDirectory(componentsPath);
-    logSummary.push(`#dim [Ccmponents ${componentCount.success}] - #bold black[failed ${componentCount.failed}]`);
+    logSummary.push(`{gray Components ${componentCount.success}} - {bold.gray failed ${componentCount.failed}}`);
 }
 
 module.exports = loadComponents;

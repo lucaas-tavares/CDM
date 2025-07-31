@@ -36,7 +36,7 @@ function setupEvents(client, logSummary) {
         });
     });
 
-    logSummary.push(`#dim [Events ${eventCount.success}] - #black bold[failed ${eventCount.failed}]`);
+    logSummary.push(`{gray Events ${eventCount.success}} - {black failed ${eventCount.failed}}`);
 }
 
 module.exports = setupEvents;
